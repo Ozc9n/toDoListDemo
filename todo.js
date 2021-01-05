@@ -4,8 +4,8 @@ const todoInput=document.querySelector("#todo");
 const todoList=document.querySelector(".list-group");
 const firstCardBody=document.querySelectorAll(".card-body")[0];
 const secondtCardBody=document.querySelectorAll(".card-body")[1];
-const filter=document.querySelectorAll("#g");
-const clearButton=document.querySelectorAll("#clear-todos");
+const filter=document.querySelector("#filter");
+const clearButton=document.querySelector("#clear-todos");
 
 eventListeners();
 
@@ -14,7 +14,43 @@ function eventListeners(){
     form.addEventListener("submit",addTodo);
     document.addEventListener("DOMContentLoaded",loadAllTodos);
     secondtCardBody.addEventListener("click",deleteTodo);
+    filter.addEventListener("keyup",filterTodos);
+    clearButton.addEventListener("click",clearAllTodos);
 }
+function clearAllTodos(e){
+    if(confirm("Tüm ToDoları silmek istediğinize emin misiniz ?")){
+        //Arayüzden temizleme 
+        //todoList.innerHTML=""; Yavaş olan yol
+        while(todoList.firstElementChild != null){
+            todoList.removeChild(todoList.firstElementChild);
+            
+        }
+        localStorage.removeItem("todos");
+        showAlert("success","ToDolar başarıyla silindi");
+    }
+
+
+
+}
+function filterTodos(e){//js otomatik e'ye değer gönderir
+    const filterValue=e.target.value.toLowerCase();
+    const listItems=document.querySelectorAll(".list-group-item");
+
+    listItems.forEach(function(listItem){//listItem burada her bir li'ye eşit olacak
+        const text=listItem.textContent.toLowerCase();
+        if(text.indexOf(filterValue)===-1)//indexof her harfe göre arar -1 de bulamadı anlamına gelir.Bulamıyorsa yani.
+        {
+          listItem.setAttribute("style","display: none !important");//none diyince sayfada var olduğunu bilip göstermiyoruz.Yani arama kısmının altı bomboş
+        //important dedimki bootstraptaki özelliği ezsin ve none özelliğini alsın
+        }
+        else
+        {
+          listItem.setAttribute("style","display: block");
+        }
+    });
+}
+
+
 function deleteTodo(e){
    if(e.target.className==="fa fa-remove"){
        e.target.parentElement.parentElement.remove();

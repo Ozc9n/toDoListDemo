@@ -12,7 +12,36 @@ eventListeners();
 
 function eventListeners(){
     form.addEventListener("submit",addTodo);
+    document.addEventListener("DOMContentLoaded",loadAllTodos);
+    secondtCardBody.addEventListener("click",deleteTodo);
 }
+function deleteTodo(e){
+   if(e.target.className==="fa fa-remove"){
+       e.target.parentElement.parentElement.remove();
+       deleteTodoFromStorage(e.target.parentElement.parentElement.textContent);
+       showAlert("success","ToDo başarıyla silindi");
+   }
+}
+function deleteTodoFromStorage(deletetodo){
+    let todos=getToDosfromStorage();
+    todos.forEach(function(todo,index){
+        if(todo === deletetodo){
+            todos.splice(index,1);//Arrayden değer silme 
+        }
+    });
+
+    localStorage.setItem("todos",JSON.stringify(todos));
+
+}
+function loadAllTodos(){
+
+    let todos=getToDosfromStorage();
+    todos.forEach(function (todo){
+        addToDoUI(todo);
+    });
+
+}
+
 
 function addTodo(e){
         const newTodo=todoInput.value.trim();
@@ -21,6 +50,7 @@ function addTodo(e){
         }
         else{
             addToDoUI(newTodo);
+            addToDotoStroage(newTodo);
             showAlert("success","ToDo başarıyla eklendi");
         }
         //Basındaki ve sonundaki boslukları trim() ile yoksayabiliyoruz
@@ -28,6 +58,24 @@ function addTodo(e){
 
 
     e.preventDefault();
+}
+function getToDosfromStorage(){//Storageden todo almak
+    let todos;
+    if(localStorage.getItem("todos")=== null){
+        todos=[];
+    }
+    else{
+        todos=JSON.parse(localStorage.getItem("todos"));
+    }
+    return todos;
+}
+
+function addToDotoStroage(newTodo){
+  let todos=getToDosfromStorage();
+  todos.push(newTodo);
+  localStorage.setItem("todos",JSON.stringify(todos));
+
+
 }
 // Bİlgilendirme mesajları Bootsrap 4 
 function showAlert(type,message){
@@ -43,20 +91,13 @@ function showAlert(type,message){
 
 }
 function addToDoUI(newTodo){
-  /*   <!-- <li class="list-group-item d-flex justify-content-between">
-    Todo 1
-    <a href = "#" class ="delete-item">
-        <i class = "fa fa-remove"></i>
-    </a>
-
- </li>--> */
   //List İtem oluşturma
    const listItem=document.createElement("li");
    const link=document.createElement("a");
   // Lİnk olusturma
    link.href="#";
    link.className="delete-item";
-   link.innerHTML="<i class = 'fa fa-remove'></i>";
+   link.innerHTML="<i class='fa fa-remove'></i>";
 
    listItem.className="list-group-item d-flex justify-content-between";
 
